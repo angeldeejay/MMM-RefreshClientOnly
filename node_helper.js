@@ -1,11 +1,24 @@
-/* Magic Mirror
- * Node Helper: MMM-MatrixRainBackground
+/**
+ * @file node_helper.js
  *
- * By Andrés Vanegas <ukab72106@gmail.com>
- * MIT Licensed.
+ * @author angeldeejay
+ * @license MIT
  */
 
-var NodeHelper = require("node_helper");
+const NodeHelper = require("node_helper");
+const Log = require("../../js/logger.js");
+const { v4: uuid } = require('uuid');
 
 module.exports = NodeHelper.create({
+    uuid: null,
+    start: function () {
+        Log.log("Starting MMM-RefreshClientOnly");
+        this.uuid = uuid();
+    },
+
+    socketNotificationReceived: function (notification, payload) {
+        if (notification === "GET_UUID") {
+            this.sendSocketNotification("UUID", this.uuid);
+        }
+    },
 });
