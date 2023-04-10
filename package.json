@@ -3,8 +3,16 @@
   "version": "1.0.0",
   "description": "MagicMirror refresh module whe using client-only strategy",
   "main": "MMM-RefreshClientOnly.js",
-  "author": "Andrés Vanegas",
+  "author": "Andrés Vanegas <ukab72106@gmail.com>",
   "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.8.4"
+  },
+  "scripts": {
+    "lint": "prettier --check .",
+    "lint:fix": "prettier --write .",
+    "test": "npm run lint"
+  },
   "dependencies": {
     "uuid": "^8.3.2"
   }
