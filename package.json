@@ -1,6 +1,6 @@
 {
   "name": "MMM-RefreshClientOnly",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MagicMirror refresh module whe using client-only strategy",
   "main": "MMM-RefreshClientOnly.js",
   "author": "Andrés Vanegas <ukab72106@gmail.com>",
