@@ -12,6 +12,7 @@ const Log = require("../../js/logger.js");
 const NodeHelper = require("node_helper");
 
 module.exports = NodeHelper.create({
+  name: path.basename(__dirname),
   uuid: null,
   cssMtime: null,
   cssPath: path.join(
@@ -27,10 +28,10 @@ module.exports = NodeHelper.create({
   },
 
   log: function (...args) {
-    Log.log(`${__dirname} ::`, ...args);
+    Log.log(`${this.name} ::`, ...args);
   },
   info: function (...args) {
-    Log.info(`${__dirname} ::`, ...args);
+    Log.info(`${this.name} ::`, ...args);
   },
 
   checkCssMtime: function () {
