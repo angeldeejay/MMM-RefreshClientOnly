@@ -22,17 +22,11 @@ Module.register("MMM-RefreshClientOnly", {
     this.info("Starting");
     this.name = "MMM-RefreshClientOnly";
     this.connected = false;
-    this.askUuid();
     this.info("Started");
   },
 
   info(...args) {
     Log.info(`${this.name} ::`, ...args);
-  },
-
-  askUuid() {
-    this._sendNotification("GET_UUID");
-    setTimeout(() => this.askUuid(), 1000);
   },
 
   updateCss() {
@@ -73,11 +67,7 @@ Module.register("MMM-RefreshClientOnly", {
     }
   },
 
-  _sendNotification(notification, payload) {
-    this.sendSocketNotification(`${this.name}_${notification}`, payload);
-  },
-
-  _notificationReceived(notification, payload) {
+  socketNotificationReceived(notification, payload) {
     switch (notification) {
       case "UUID":
         if (this.uuid === null) {
@@ -91,12 +81,5 @@ Module.register("MMM-RefreshClientOnly", {
         break;
       default:
     }
-  },
-
-  socketNotificationReceived(notification, payload) {
-    this._notificationReceived(
-      notification.replace(new RegExp(`${this.name}_`, "gi"), ""),
-      payload
-    );
   }
 });
