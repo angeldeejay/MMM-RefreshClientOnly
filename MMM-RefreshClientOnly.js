@@ -9,7 +9,7 @@
 
 Module.register("MMM-RefreshClientOnly", {
   name: "MMM-RefreshClientOnly",
-  connected: true,
+  connected: false,
   errors: 0,
   defaults: {
     maxSecondsOffline: 5
@@ -20,6 +20,9 @@ Module.register("MMM-RefreshClientOnly", {
 
   start() {
     this.info("Starting");
+    this.name = "MMM-RefreshClientOnly";
+    this.connected = false;
+    this.askUuid();
     this.info("Started");
   },
 
@@ -87,13 +90,6 @@ Module.register("MMM-RefreshClientOnly", {
         this.updateCss();
         break;
       default:
-    }
-  },
-
-  notificationReceived(payload, notification) {
-    if (notification === "ALL_MODULES_STARTED") {
-      this.info("All modules loaded successfully. Asking UUID from backend");
-      this.askUuid();
     }
   },
 

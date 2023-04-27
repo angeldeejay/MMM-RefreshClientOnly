@@ -5,32 +5,41 @@
  * @license MIT
  */
 
-const { v4: uuid } = require("uuid");
-const fs = require("node:fs");
-const path = require("node:path");
+const md5 = require("md5");
+const fs = require("fs");
+const path = require("path");
 const NodeHelper = require("node_helper");
 
 module.exports = NodeHelper.create({
   name: path.basename(__dirname),
   uuid: null,
   cssMtime: null,
-  cssPath: path.join(
-    path.dirname(path.dirname(__dirname)),
-    "css",
-    "custom.css"
-  ),
+  cssPath: null,
 
-  start() {
-    this.info("Starting");
-    this.cssMtime = null;
-    this.uuid = uuid();
-    this.info("Evaluating changes in " + this.cssPath);
-    setInterval(() => this.checkCssMtime(), 500);
-    this.info("Started");
+  _sendNotification(notification, payload) {
+    this.sendSocketNotification(`${this.name}_${notification}`, payload);
   },
 
   info(...args) {
     Log.info(`${this.name} ::`, ...args);
+  },
+
+  start() {
+    this.info("Starting");
+    this.cssMtime = null;
+    this.cssPath = path.join(
+      path.dirname(path.dirname(__dirname)),
+      "css",
+      "custom.css"
+    );
+    this.uuid = md5(new Date().toString());
+    this.info("UUID is " + this.uuid);
+    this.info("Evaluating changes in " + this.cssPath);
+    setInterval(() => {
+      this.checkCssMtime();
+      this._sendNotification("UUID", this.uuid);
+    }, 1000);
+    this.info("Started");
   },
 
   checkCssMtime() {
@@ -50,22 +59,5 @@ module.exports = NodeHelper.create({
         }
       }
     }
-  },
-
-  _sendNotification(notification, payload) {
-    this.sendSocketNotification(`${this.name}_${notification}`, payload);
-  },
-
-  _notificationReceived(notification, payload) {
-    if (notification === "GET_UUID") {
-      this._sendNotification("UUID", this.uuid);
-    }
-  },
-
-  socketNotificationReceived: function (notification, payload) {
-    this._notificationReceived(
-      notification.replace(new RegExp(`${this.name}_`, "gi"), ""),
-      payload
-    );
   }
 });
