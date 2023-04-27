@@ -27,15 +27,12 @@ module.exports = NodeHelper.create({
     this.cssPath = join(dirname(dirname(__dirname)), "css", "custom.css");
     this.uuid = md5(new Date().toString());
     this.info("UUID is " + this.uuid);
-    setInterval(() => {
-      this.info("Pinging UUID");
-      this.sendSocketNotification(`${this.name}-UUID`, this.uuid);
-    }, 1000);
-    setInterval(() => this.checkCssMtime(), 1000);
+    setInterval(() => this.performChecks(), 1000);
     this.info("Started");
   },
 
-  checkCssMtime() {
+  performChecks() {
+    this.sendSocketNotification(`${this.name}-UUID`, this.uuid);
     if (fs.existsSync(this.cssPath)) {
       const stats = fs.statSync(this.cssPath);
       const lastModifiedTime = `${stats.mtime}`;
