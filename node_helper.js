@@ -6,7 +6,6 @@
  */
 
 const { v4: uuid } = require("uuid");
-const cssPath = "../../css/custom.css";
 const fs = require("node:fs");
 const Log = require("../../js/logger.js");
 const NodeHelper = require("node_helper");
@@ -14,6 +13,7 @@ const NodeHelper = require("node_helper");
 module.exports = NodeHelper.create({
   uuid: null,
   cssMtime: null,
+  cssPath: path.join(path.dirname(__dirname), "css", "custom.css"),
   start: function () {
     Log.log("Starting MMM-RefreshClientOnly");
     this.uuid = uuid();
@@ -21,9 +21,10 @@ module.exports = NodeHelper.create({
   },
 
   checkCssMtime: function () {
-    if (fs.existsSync(cssPath)) {
+    Log.info(`MMM-RefreshClientOnly :: Custom stylesheet: ${this.cssPath}`);
+    if (fs.existsSync(this.cssPath)) {
       Log.info(`MMM-RefreshClientOnly :: Custom stylesheet exists, checking`);
-      const stats = fs.statSync(cssPath);
+      const stats = fs.statSync(this.cssPath);
       const lastModifiedTime = stats.mtime;
       const savedModifiedTime = this.cssMtime;
       if (lastModifiedTime !== savedModifiedTime) {
@@ -46,5 +47,5 @@ module.exports = NodeHelper.create({
     if (notification === "GET_UUID") {
       this.sendSocketNotification("UUID", this.uuid);
     }
-  },
+  }
 });

@@ -1,0 +1,8 @@
+{
+  "parser": "babel",
+  "trailingComma": "none",
+  "singleQuote": false,
+  "quoteProps": "as-needed",
+  "arrowParens": "always",
+  "endOfLine": "lf"
+}
