@@ -8,6 +8,7 @@
 const md5 = require("md5");
 const fs = require("fs");
 const path = require("path");
+const Log = require("logger");
 const NodeHelper = require("node_helper");
 
 module.exports = NodeHelper.create({
