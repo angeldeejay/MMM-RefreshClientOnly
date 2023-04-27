@@ -8,6 +8,7 @@
  */
 
 Module.register("MMM-RefreshClientOnly", {
+  name: "MMM-RefreshClientOnly",
   connected: true,
   errors: 0,
   defaults: {
@@ -17,8 +18,22 @@ Module.register("MMM-RefreshClientOnly", {
 
   requiresVersion: "2.1.0", // Required version of MagicMirror
 
-  start: function () {
-    this.checkConnection();
+  start: function () {},
+
+  askUuid: function () {
+    this._sendNotification("GET_UUID");
+    setTimeout(() => this.askUuid(), 1000);
+  },
+
+  updateCss: function () {
+    const styleTags = document.getElementsByTagName("link");
+    for (const tag of styleTags) {
+      if (tag.rel.toLowerCase().indexOf("stylesheet") >= 0 && tag.href) {
+        const url = tag.href.replace(/(&|%5C?)forceReload=\d+/, "");
+        const connector = url.indexOf("?") >= 0 ? "&" : "?";
+        tag.href = `${url}${connector}forceReload=${new Date().valueOf()}`;
+      }
+    }
   },
 
   refresh: function () {
@@ -46,18 +61,39 @@ Module.register("MMM-RefreshClientOnly", {
     }
   },
 
-  socketNotificationReceived: function (notification, payload) {
-    if (notification === "UUID") {
-      if (this.uuid === null) {
-        this.uuid = payload;
-      } else if (this.uuid !== payload) {
-        this.refresh();
-      }
+  _sendNotification(notification, payload) {
+    this.sendSocketNotification(`${this.name}_${notification}`, payload);
+  },
+
+  _notificationReceived(notification, payload) {
+    switch (notification) {
+      case "UUID":
+        if (this.uuid === null) {
+          this.uuid = payload;
+        } else if (this.uuid !== payload) {
+          this.refresh();
+        }
+        break;
+      case "UPDATE_CSS":
+        this.updateCss();
+        break;
+      default:
     }
   },
 
-  checkConnection: function () {
-    this.sendSocketNotification("GET_UUID");
-    setTimeout(() => this.checkConnection(), 1000);
+  socketNotificationReceived: function (notification, payload) {
+    this._notificationReceived(
+      notification.replace(new RegExp(`${this.name}_`, "gi"), ""),
+      payload
+    );
+  },
+
+  notificationReceived(notification, payload) {
+    switch (notification) {
+      case "ALL_MODULES_STARTED":
+        this.askUuid();
+        break;
+      default:
+    }
   }
 });

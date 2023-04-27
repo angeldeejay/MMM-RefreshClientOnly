@@ -8,7 +8,6 @@
 const { v4: uuid } = require("uuid");
 const fs = require("node:fs");
 const path = require("node:path");
-const Log = require("../../js/logger.js");
 const NodeHelper = require("node_helper");
 
 module.exports = NodeHelper.create({
@@ -21,17 +20,8 @@ module.exports = NodeHelper.create({
     "custom.css"
   ),
   start: function () {
-    this.log("Starting");
     this.uuid = uuid();
     setInterval(() => this.checkCssMtime(), 500);
-    this.log("Started");
-  },
-
-  log: function (...args) {
-    Log.log(`${this.name} ::`, ...args);
-  },
-  info: function (...args) {
-    Log.info(`${this.name} ::`, ...args);
   },
 
   checkCssMtime: function () {
@@ -43,16 +33,26 @@ module.exports = NodeHelper.create({
       if (lastModifiedTime !== savedModifiedTime) {
         this.cssMtime = lastModifiedTime;
         if (savedModifiedTime !== "never") {
-          this.info(`Custom stylesheet changed. Reloading`);
-          this.uuid = uuid();
+          this._sendNotification("UPDATE_CSS", true);
         }
       }
     }
   },
 
-  socketNotificationReceived: function (notification, payload) {
+  _sendNotification(notification, payload) {
+    this.sendSocketNotification(`${this.name}_${notification}`, payload);
+  },
+
+  _notificationReceived(notification, payload) {
     if (notification === "GET_UUID") {
-      this.sendSocketNotification("UUID", this.uuid);
+      this._sendNotification("UUID", this.uuid);
     }
+  },
+
+  socketNotificationReceived: function (notification, payload) {
+    this._notificationReceived(
+      notification.replace(new RegExp(`${this.name}_`, "gi"), ""),
+      payload
+    );
   }
 });
