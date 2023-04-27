@@ -14,33 +14,43 @@ const NodeHelper = require("node_helper");
 module.exports = NodeHelper.create({
   uuid: null,
   cssMtime: null,
-  cssPath: path.join(path.dirname(__dirname), "css", "custom.css"),
+  cssPath: path.join(
+    path.dirname(path.dirname(__dirname)),
+    "css",
+    "custom.css"
+  ),
   start: function () {
-    Log.log("Starting MMM-RefreshClientOnly");
+    this.log("Starting");
     this.uuid = uuid();
     setInterval(() => this.checkCssMtime(), 1000);
+    this.log("Started");
+  },
+
+  log: function (...args) {
+    Log.log(`${__dirname} ::`, ...args);
+  },
+  info: function (...args) {
+    Log.info(`${__dirname} ::`, ...args);
   },
 
   checkCssMtime: function () {
-    Log.info(`MMM-RefreshClientOnly :: Custom stylesheet: ${this.cssPath}`);
+    this.info(`Custom stylesheet: ${this.cssPath}`);
     if (fs.existsSync(this.cssPath)) {
-      Log.info(`MMM-RefreshClientOnly :: Custom stylesheet exists, checking`);
+      this.info(`Custom stylesheet exists, checking`);
       const stats = fs.statSync(this.cssPath);
       const lastModifiedTime = stats.mtime;
       const savedModifiedTime = this.cssMtime;
       if (lastModifiedTime !== savedModifiedTime) {
         this.cssMtime = lastModifiedTime;
         if (savedModifiedTime !== null) {
-          Log.info(
-            `MMM-RefreshClientOnly :: Custom stylesheet changed. Reloading`
-          );
+          this.info(`Custom stylesheet changed. Reloading`);
           this.uuid = uuid();
         }
       } else {
-        Log.info(`MMM-RefreshClientOnly :: Custom stylesheet not changed`);
+        this.info(`Custom stylesheet not changed`);
       }
     } else {
-      Log.info(`MMM-RefreshClientOnly :: Custom stylesheet doesn't exists`);
+      this.info(`Custom stylesheet doesn't exists`);
     }
   },
 
