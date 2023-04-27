@@ -40,7 +40,6 @@ module.exports = NodeHelper.create({
       const lastModifiedTime = `${stats.mtime}`;
       const savedModifiedTime =
         this.cssMtime === null ? "never" : `${this.cssMtime}`;
-      this.log(lastModifiedTime, lastModifiedTime);
       if (lastModifiedTime !== savedModifiedTime) {
         this.cssMtime = lastModifiedTime;
         if (savedModifiedTime !== "never") {
