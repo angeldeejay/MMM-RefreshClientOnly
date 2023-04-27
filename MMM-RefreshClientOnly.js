@@ -34,6 +34,7 @@ Module.register("MMM-RefreshClientOnly", {
   },
 
   updateCss: function () {
+    this.info("Updating stylesheets");
     const styleTags = document.getElementsByTagName("link");
     for (const tag of styleTags) {
       if (tag.rel.toLowerCase().indexOf("stylesheet") >= 0 && tag.href) {
@@ -45,6 +46,7 @@ Module.register("MMM-RefreshClientOnly", {
   },
 
   refresh: function () {
+    this.info("Refreshing");
     // https://stackoverflow.com/questions/3715047/how-to-reload-a-page-using-javascript
     try {
       // JavaScript 1.2 and newer
