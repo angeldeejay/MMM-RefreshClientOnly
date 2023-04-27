@@ -40,6 +40,7 @@ module.exports = NodeHelper.create({
       const stats = fs.statSync(this.cssPath);
       const lastModifiedTime = stats.mtime;
       const savedModifiedTime = this.cssMtime;
+      this.log(stats.mtime, this.cssMtime);
       if (lastModifiedTime !== savedModifiedTime) {
         this.cssMtime = lastModifiedTime;
         if (savedModifiedTime !== null) {
