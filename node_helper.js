@@ -23,7 +23,7 @@ module.exports = NodeHelper.create({
   start: function () {
     this.log("Starting");
     this.uuid = uuid();
-    setInterval(() => this.checkCssMtime(), 1000);
+    setInterval(() => this.checkCssMtime(), 500);
     this.log("Started");
   },
 
