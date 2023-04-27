@@ -35,9 +35,7 @@ module.exports = NodeHelper.create({
   },
 
   checkCssMtime: function () {
-    this.info(`Custom stylesheet: ${this.cssPath}`);
     if (fs.existsSync(this.cssPath)) {
-      this.info(`Custom stylesheet exists, checking`);
       const stats = fs.statSync(this.cssPath);
       const lastModifiedTime = `${stats.mtime}`;
       const savedModifiedTime =
@@ -49,11 +47,7 @@ module.exports = NodeHelper.create({
           this.info(`Custom stylesheet changed. Reloading`);
           this.uuid = uuid();
         }
-      } else {
-        this.info(`Custom stylesheet not changed`);
       }
-    } else {
-      this.info(`Custom stylesheet doesn't exists`);
     }
   },
 
