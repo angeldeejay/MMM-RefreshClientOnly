@@ -65,8 +65,10 @@ Module.register("MMM-RefreshClientOnly", {
     switch (notification.replace(new RegExp(`${this.name}-`, "gi"), "")) {
       case "UUID":
         if (this.uuid === null) {
+          this.log("Received UUID: " + payload);
           this.uuid = payload;
         } else if (this.uuid !== payload) {
+          this.log(`UUID changed: ${this.uuid} | ${payload}`);
           this.refreshing = true;
           this.refresh();
         }
