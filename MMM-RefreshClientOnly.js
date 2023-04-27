@@ -19,7 +19,7 @@ Module.register("MMM-RefreshClientOnly", {
     this.name = "MMM-RefreshClientOnly";
     setInterval(() => {
       this.log("Pinging UUID");
-      this.sendSocketNotification(`${this.name}_READY`, true);
+      this.sendSocketNotification(`${this.name}-READY`, true);
     }, 1000);
     this.info("Started");
   },
@@ -67,7 +67,7 @@ Module.register("MMM-RefreshClientOnly", {
   },
 
   socketNotificationReceived(notification, payload) {
-    switch (notification.replace(new RegExp(`${this.name}_`, "gi"), "")) {
+    switch (notification.replace(new RegExp(`${this.name}-`, "gi"), "")) {
       case "UUID":
         if (this.uuid === null) {
           this.uuid = payload;
