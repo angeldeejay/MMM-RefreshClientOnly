@@ -12,7 +12,7 @@ const Log = require("logger");
 const NodeHelper = require("node_helper");
 
 module.exports = NodeHelper.create({
-  name: "MMM-RefreshClientOnly",
+  name: basename(__dirname),
   uuid: null,
   cssMtime: null,
   cssPath: null,
@@ -22,14 +22,15 @@ module.exports = NodeHelper.create({
   },
 
   start() {
-    this.info("Starting");
+    this.name = basename(__dirname);
     this.cssMtime = null;
     this.cssPath = join(dirname(dirname(__dirname)), "css", "custom.css");
     this.uuid = md5(new Date().toString());
+    this.info("Starting");
     this.info("UUID is " + this.uuid);
     this.info("Evaluating changes in " + this.cssPath);
     setInterval(() => {
-      this.log("Pinging UUID");
+      this.info("Pinging UUID");
       this.sendSocketNotification(`${this.name}-UUID`, this.uuid);
     }, 1000);
     setInterval(() => this.checkCssMtime(), 1000);
