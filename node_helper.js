@@ -7,6 +7,7 @@
 
 const { v4: uuid } = require("uuid");
 const fs = require("node:fs");
+const path = require("node:path");
 const Log = require("../../js/logger.js");
 const NodeHelper = require("node_helper");
 
