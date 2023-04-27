@@ -15,6 +15,10 @@ Module.register("MMM-RefreshClientOnly", {
   start() {
     this.refreshing = false;
     this.uuid = null;
+    setInterval(
+      () => this.sendSocketNotification(`${this.name}-READY`, true),
+      1000
+    );
   },
 
   info(msg, ...args) {
