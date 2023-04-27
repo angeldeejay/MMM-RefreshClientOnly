@@ -7,12 +7,12 @@
 
 const md5 = require("md5");
 const fs = require("fs");
-const path = require("path");
+const { join, dirname, basename } = require("path");
 const Log = require("logger");
 const NodeHelper = require("node_helper");
 
 module.exports = NodeHelper.create({
-  name: path.basename(__dirname),
+  name: "MMM-RefreshClientOnly",
   uuid: null,
   cssMtime: null,
   cssPath: null,
@@ -24,18 +24,14 @@ module.exports = NodeHelper.create({
   start() {
     this.info("Starting");
     this.cssMtime = null;
-    this.cssPath = path.join(
-      path.dirname(path.dirname(__dirname)),
-      "css",
-      "custom.css"
-    );
+    this.cssPath = join(dirname(dirname(__dirname)), "css", "custom.css");
     this.uuid = md5(new Date().toString());
     this.info("UUID is " + this.uuid);
     this.info("Evaluating changes in " + this.cssPath);
-    setInterval(
-      () => this.sendSocketNotification(`${this.name}_UUID`, this.uuid),
-      1000
-    );
+    setInterval(() => {
+      this.log("Pinging UUID");
+      this.sendSocketNotification(`${this.name}_UUID`, this.uuid);
+    }, 1000);
     setInterval(() => this.checkCssMtime(), 1000);
     this.info("Started");
   },
