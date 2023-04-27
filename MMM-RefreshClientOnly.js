@@ -18,22 +18,21 @@ Module.register("MMM-RefreshClientOnly", {
 
   requiresVersion: "2.1.0", // Required version of MagicMirror
 
-  start: function () {
+  start() {
     this.info("Starting");
-    this.askUuid();
     this.info("Started");
   },
 
-  info: function (...args) {
+  info(...args) {
     Log.info(`${this.name} ::`, ...args);
   },
 
-  askUuid: function () {
+  askUuid() {
     this._sendNotification("GET_UUID");
     setTimeout(() => this.askUuid(), 1000);
   },
 
-  updateCss: function () {
+  updateCss() {
     this.info("Updating stylesheets");
     const styleTags = document.getElementsByTagName("link");
     for (const tag of styleTags) {
@@ -45,7 +44,7 @@ Module.register("MMM-RefreshClientOnly", {
     }
   },
 
-  refresh: function () {
+  refresh() {
     this.info("Refreshing");
     // https://stackoverflow.com/questions/3715047/how-to-reload-a-page-using-javascript
     try {
@@ -91,7 +90,14 @@ Module.register("MMM-RefreshClientOnly", {
     }
   },
 
-  socketNotificationReceived: function (notification, payload) {
+  notificationReceived(payload, notification) {
+    if (notification === "ALL_MODULES_STARTED") {
+      this.info("All modules loaded successfully. Asking UUID from backend");
+      this.askUuid();
+    }
+  },
+
+  socketNotificationReceived(notification, payload) {
     this._notificationReceived(
       notification.replace(new RegExp(`${this.name}_`, "gi"), ""),
       payload

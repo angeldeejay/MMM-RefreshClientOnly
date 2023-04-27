@@ -19,7 +19,8 @@ module.exports = NodeHelper.create({
     "css",
     "custom.css"
   ),
-  start: function () {
+
+  start() {
     this.info("Starting");
     this.cssMtime = null;
     this.uuid = uuid();
@@ -28,11 +29,11 @@ module.exports = NodeHelper.create({
     this.info("Started");
   },
 
-  info: function (...args) {
+  info(...args) {
     Log.info(`${this.name} ::`, ...args);
   },
 
-  checkCssMtime: function () {
+  checkCssMtime() {
     if (fs.existsSync(this.cssPath)) {
       const stats = fs.statSync(this.cssPath);
       const lastModifiedTime = `${stats.mtime}`;
