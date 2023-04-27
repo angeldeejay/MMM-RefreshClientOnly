@@ -24,6 +24,10 @@ module.exports = NodeHelper.create({
     setInterval(() => this.checkCssMtime(), 500);
   },
 
+  info: function (...args) {
+    Log.info(`${this.name} ::`, ...args);
+  },
+
   checkCssMtime: function () {
     if (fs.existsSync(this.cssPath)) {
       const stats = fs.statSync(this.cssPath);
@@ -33,6 +37,7 @@ module.exports = NodeHelper.create({
       if (lastModifiedTime !== savedModifiedTime) {
         this.cssMtime = lastModifiedTime;
         if (savedModifiedTime !== "never") {
+          this.info("Stylesheets updated");
           this._sendNotification("UPDATE_CSS", true);
         }
       }
