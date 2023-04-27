@@ -22,16 +22,23 @@ module.exports = NodeHelper.create({
 
   checkCssMtime: function () {
     if (fs.existsSync(cssPath)) {
+      Log.info(`MMM-RefreshClientOnly :: Custom stylesheet exists, checking`);
       const stats = fs.statSync(cssPath);
       const lastModifiedTime = stats.mtime;
       const savedModifiedTime = this.cssMtime;
       if (lastModifiedTime !== savedModifiedTime) {
         this.cssMtime = lastModifiedTime;
         if (savedModifiedTime !== null) {
-          Log.info(`Updated custom stylesheet. Reloading`);
+          Log.info(
+            `MMM-RefreshClientOnly :: Custom stylesheet changed. Reloading`
+          );
           this.uuid = uuid();
         }
+      } else {
+        Log.info(`MMM-RefreshClientOnly :: Custom stylesheet not changed`);
       }
+    } else {
+      Log.info(`MMM-RefreshClientOnly :: Custom stylesheet doesn't exists`);
     }
   },
 
