@@ -38,12 +38,13 @@ module.exports = NodeHelper.create({
     if (fs.existsSync(this.cssPath)) {
       this.info(`Custom stylesheet exists, checking`);
       const stats = fs.statSync(this.cssPath);
-      const lastModifiedTime = stats.mtime;
-      const savedModifiedTime = this.cssMtime;
-      this.log(stats.mtime, this.cssMtime);
+      const lastModifiedTime = `${stats.mtime}`;
+      const savedModifiedTime =
+        this.cssMtime === null ? "never" : `${this.cssMtime}`;
+      this.log(lastModifiedTime, lastModifiedTime);
       if (lastModifiedTime !== savedModifiedTime) {
         this.cssMtime = lastModifiedTime;
-        if (savedModifiedTime !== null) {
+        if (savedModifiedTime !== "never") {
           this.info(`Custom stylesheet changed. Reloading`);
           this.uuid = uuid();
         }
