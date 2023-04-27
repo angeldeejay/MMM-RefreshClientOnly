@@ -26,9 +26,7 @@ module.exports = NodeHelper.create({
     this.cssMtime = null;
     this.cssPath = join(dirname(dirname(__dirname)), "css", "custom.css");
     this.uuid = md5(new Date().toString());
-    this.info("Starting");
     this.info("UUID is " + this.uuid);
-    this.info("Evaluating changes in " + this.cssPath);
     setInterval(() => {
       this.info("Pinging UUID");
       this.sendSocketNotification(`${this.name}-UUID`, this.uuid);

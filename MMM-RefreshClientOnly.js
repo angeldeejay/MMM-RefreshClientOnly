@@ -10,15 +10,11 @@
 Module.register("MMM-RefreshClientOnly", {
   name: "MMM-RefreshClientOnly",
   uuid: null,
+  refreshing: false,
 
   start() {
-    this.info("Starting");
+    this.refreshing = false;
     this.uuid = null;
-    setInterval(() => {
-      this.info("Pinging UUID");
-      this.sendSocketNotification(`${this.name}-READY`, true);
-    }, 1000);
-    this.info("Started");
   },
 
   info(msg, ...args) {
@@ -38,29 +34,31 @@ Module.register("MMM-RefreshClientOnly", {
   },
 
   refresh() {
-    this.info("Refreshing");
+    this.info("Server restarted. Refreshing");
     // https://stackoverflow.com/questions/3715047/how-to-reload-a-page-using-javascript
-    try {
-      // JavaScript 1.2 and newer
-      window.location.reload(true);
-    } catch (_) {
+    setTimeout(() => {
       try {
-        // JavaScript 1.1
-        window.location.replace(
-          window.location.pathname +
-            window.location.search +
-            window.location.hash
-        );
+        // JavaScript 1.2 and newer
+        window.location.reload(true);
       } catch (_) {
         try {
-          // JavaScript 1.0
-          window.location.href =
+          // JavaScript 1.1
+          window.location.replace(
             window.location.pathname +
-            window.location.search +
-            window.location.hash;
-        } catch (_) {}
+              window.location.search +
+              window.location.hash
+          );
+        } catch (_) {
+          try {
+            // JavaScript 1.0
+            window.location.href =
+              window.location.pathname +
+              window.location.search +
+              window.location.hash;
+          } catch (_) {}
+        }
       }
-    }
+    }, 1000);
   },
 
   socketNotificationReceived(notification, payload) {
@@ -68,12 +66,15 @@ Module.register("MMM-RefreshClientOnly", {
       case "UUID":
         if (this.uuid === null) {
           this.uuid = payload;
-        } else if (this.uuid !== payload) {
+        } else if (this.uuid !== payload && !this.refreshing) {
+          this.refreshing = true;
           this.refresh();
         }
         break;
       case "UPDATE_CSS":
-        this.updateCss();
+        if (!this.refreshing) {
+          this.updateCss();
+        }
         break;
       default:
     }
