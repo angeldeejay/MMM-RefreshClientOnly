@@ -66,7 +66,7 @@ Module.register("MMM-RefreshClientOnly", {
       case "UUID":
         if (this.uuid === null) {
           this.uuid = payload;
-        } else if (this.uuid !== payload && !this.refreshing) {
+        } else if (this.uuid !== payload) {
           this.refreshing = true;
           this.refresh();
         }
