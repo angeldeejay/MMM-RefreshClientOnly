@@ -36,8 +36,8 @@ module.exports = NodeHelper.create({
     this.info("UUID is " + this.uuid);
     this.info("Evaluating changes in " + this.cssPath);
     setInterval(() => {
-      this.checkCssMtime();
       this._sendNotification("UUID", this.uuid);
+      this.checkCssMtime();
     }, 1000);
     this.info("Started");
   },
