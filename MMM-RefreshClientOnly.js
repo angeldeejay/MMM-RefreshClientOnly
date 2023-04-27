@@ -17,7 +17,10 @@ Module.register("MMM-RefreshClientOnly", {
   start() {
     this.info("Starting");
     this.name = "MMM-RefreshClientOnly";
-    this.connected = false;
+    setInterval(() => {
+      this.log("Pinging UUID");
+      this.sendSocketNotification(`${this.name}_READY`, true);
+    }, 1000);
     this.info("Started");
   },
 
