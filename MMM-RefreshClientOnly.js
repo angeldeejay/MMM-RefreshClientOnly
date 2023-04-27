@@ -9,8 +9,6 @@
 
 Module.register("MMM-RefreshClientOnly", {
   name: "MMM-RefreshClientOnly",
-  connected: false,
-  errors: 0,
   defaults: {
     maxSecondsOffline: 5
   },
