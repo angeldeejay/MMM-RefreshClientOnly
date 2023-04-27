@@ -21,10 +21,6 @@ module.exports = NodeHelper.create({
     Log.info(`${this.name} :: ${msg}`, ...args);
   },
 
-  _sendNotification(notification, payload) {
-    this.sendSocketNotification(`${this.name}_${notification}`, payload);
-  },
-
   start() {
     this.info("Starting");
     this.cssMtime = null;
@@ -36,10 +32,11 @@ module.exports = NodeHelper.create({
     this.uuid = md5(new Date().toString());
     this.info("UUID is " + this.uuid);
     this.info("Evaluating changes in " + this.cssPath);
-    setInterval(() => {
-      this._sendNotification("UUID", this.uuid);
-      this.checkCssMtime();
-    }, 1000);
+    setInterval(
+      () => this.sendSocketNotification(`${this.name}_UUID`, this.uuid),
+      1000
+    );
+    setInterval(() => this.checkCssMtime(), 1000);
     this.info("Started");
   },
 
@@ -56,7 +53,7 @@ module.exports = NodeHelper.create({
         this.cssMtime = lastModifiedTime;
         if (savedModifiedTime !== null) {
           this.info("Stylesheets updated");
-          this._sendNotification("UPDATE_CSS", true);
+          this.sendSocketNotification(`${this.name}_UPDATE_CSS`, true);
         }
       }
     }

@@ -16,8 +16,6 @@ Module.register("MMM-RefreshClientOnly", {
   },
   uuid: null,
 
-  requiresVersion: "2.1.0", // Required version of MagicMirror
-
   start() {
     this.info("Starting");
     this.name = "MMM-RefreshClientOnly";
@@ -67,8 +65,8 @@ Module.register("MMM-RefreshClientOnly", {
     }
   },
 
-  _notificationReceived(notification, payload) {
-    switch (notification) {
+  socketNotificationReceived(notification, payload) {
+    switch (notification.replace(new RegExp(`${this.name}_`, "gi"), "")) {
       case "UUID":
         if (this.uuid === null) {
           this.uuid = payload;
@@ -81,12 +79,5 @@ Module.register("MMM-RefreshClientOnly", {
         break;
       default:
     }
-  },
-
-  socketNotificationReceived: function (notification, payload) {
-    this._notificationReceived(
-      notification.replace(new RegExp(`${this.name}_`, "gi"), ""),
-      payload
-    );
   }
 });
