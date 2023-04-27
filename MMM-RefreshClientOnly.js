@@ -15,10 +15,6 @@ Module.register("MMM-RefreshClientOnly", {
   start() {
     this.refreshing = false;
     this.uuid = null;
-    setInterval(
-      () => this.sendSocketNotification(`${this.name}-READY`, true),
-      1000
-    );
   },
 
   info(msg, ...args) {
@@ -65,6 +61,12 @@ Module.register("MMM-RefreshClientOnly", {
     }, 1000);
   },
 
+  notificationReceived(notification, ..._) {
+    if (notification === "ALL_MODULES_STARTED") {
+      this.sendSocketNotification(`${this.name}-READY`, true);
+    }
+  },
+
   socketNotificationReceived(notification, payload) {
     switch (notification.replace(new RegExp(`${this.name}-`, "gi"), "")) {
       case "UUID":
@@ -72,8 +74,8 @@ Module.register("MMM-RefreshClientOnly", {
           this.info("Received UUID: " + payload);
           this.uuid = payload;
         } else if (this.uuid !== payload) {
-          this.info(`UUID changed: ${this.uuid} | ${payload}`);
           this.refreshing = true;
+          this.info(`UUID changed: ${this.uuid} | ${payload}`);
           this.refresh();
         }
         break;
