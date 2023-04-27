@@ -25,8 +25,8 @@ Module.register("MMM-RefreshClientOnly", {
     this.info("Started");
   },
 
-  info(...args) {
-    Log.info(`${this.name} ::`, ...args);
+  info(msg, ...args) {
+    Log.info(`${this.name} :: ${msg}`, ...args);
   },
 
   updateCss() {
@@ -67,7 +67,7 @@ Module.register("MMM-RefreshClientOnly", {
     }
   },
 
-  socketNotificationReceived(notification, payload) {
+  _notificationReceived(notification, payload) {
     switch (notification) {
       case "UUID":
         if (this.uuid === null) {
@@ -81,5 +81,12 @@ Module.register("MMM-RefreshClientOnly", {
         break;
       default:
     }
+  },
+
+  socketNotificationReceived: function (notification, payload) {
+    this._notificationReceived(
+      notification.replace(new RegExp(`${this.name}_`, "gi"), ""),
+      payload
+    );
   }
 });
