@@ -20,8 +20,12 @@ module.exports = NodeHelper.create({
     "custom.css"
   ),
   start: function () {
+    this.info("Starting");
+    this.cssMtime = null;
     this.uuid = uuid();
+    this.info("Evaluating changes in " + this.cssPath);
     setInterval(() => this.checkCssMtime(), 500);
+    this.info("Started");
   },
 
   info: function (...args) {
@@ -33,10 +37,13 @@ module.exports = NodeHelper.create({
       const stats = fs.statSync(this.cssPath);
       const lastModifiedTime = `${stats.mtime}`;
       const savedModifiedTime =
-        this.cssMtime === null ? "never" : `${this.cssMtime}`;
-      if (lastModifiedTime !== savedModifiedTime) {
+        this.cssMtime === null ? null : `${this.cssMtime}`;
+      if (
+        savedModifiedTime === null ||
+        lastModifiedTime !== savedModifiedTime
+      ) {
         this.cssMtime = lastModifiedTime;
-        if (savedModifiedTime !== "never") {
+        if (savedModifiedTime !== null) {
           this.info("Stylesheets updated");
           this._sendNotification("UPDATE_CSS", true);
         }
