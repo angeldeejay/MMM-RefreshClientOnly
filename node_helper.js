@@ -25,6 +25,8 @@ module.exports = NodeHelper.create({
     this.name = basename(__dirname);
     this.cssMtime = null;
     this.cssPath = join(dirname(dirname(__dirname)), "css", "custom.css");
+    const mmVersion = JSON.parse(fs.readFileSync(join(dirname(dirname(__dirname)), "package.json"))).version;
+    console.log(`MagicMirror v${mmVersion}`);
     this.uuid = md5(new Date().toString());
     this.info("UUID is " + this.uuid);
     setInterval(() => this.performChecks(), 1000);
