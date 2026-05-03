@@ -14,8 +14,7 @@ const NodeHelper = require("node_helper");
 module.exports = NodeHelper.create({
   name: basename(__dirname),
   uuid: null,
-  cssMtime: null,
-  cssPath: null,
+  cssPaths: {},
 
   info(msg, ...args) {
     Log.info(`${this.name} :: ${msg}`, ...args);
@@ -23,10 +22,20 @@ module.exports = NodeHelper.create({
 
   start() {
     this.name = basename(__dirname);
-    this.cssMtime = null;
-    this.cssPath = join(dirname(dirname(__dirname)), "css", "custom.css");
-    const mmVersion = JSON.parse(fs.readFileSync(join(dirname(dirname(__dirname)), "package.json"))).version;
-    console.log(`MagicMirror v${mmVersion}`);
+
+    const mmRoot = dirname(dirname(__dirname));
+    this.cssPaths = [
+      // MAgicMirror >= v2.35.0
+      "config",
+      // MAgicMirror < v2.35.0
+      "css"
+    ]
+      .map((f) => join(mmRoot, f))
+      .filter((f) => fs.existsSync(f) && fs.statSync(f).isDirectory())
+      .map((f) => join(f, "custom.css"))
+      .filter((f) => fs.existsSync(f) && fs.statSync(f).isFile())
+      .reduce((acc, f) => ({ ...acc, [f]: 0 }), {});
+
     this.uuid = md5(new Date().toString());
     this.info("UUID is " + this.uuid);
     setInterval(() => this.performChecks(), 1000);
@@ -35,21 +44,22 @@ module.exports = NodeHelper.create({
 
   performChecks() {
     this.sendSocketNotification(`${this.name}-UUID`, this.uuid);
-    if (fs.existsSync(this.cssPath)) {
-      const stats = fs.statSync(this.cssPath);
-      const lastModifiedTime = `${stats.mtime}`;
-      const savedModifiedTime =
-        this.cssMtime === null ? null : `${this.cssMtime}`;
-      if (
-        savedModifiedTime === null ||
-        lastModifiedTime !== savedModifiedTime
-      ) {
-        this.cssMtime = lastModifiedTime;
-        if (savedModifiedTime !== null) {
+
+    Object.entries(this.cssPaths).forEach(([cssPath, mtime]) => {
+      if (!fs.existsSync(cssPath)) {
+        return;
+      }
+
+      const stats = fs.statSync(cssPath);
+      const lastModifiedTime = stats.mtimeMs;
+      const savedModifiedTime = mtime ?? 0;
+      if (lastModifiedTime > savedModifiedTime) {
+        this.cssPaths[cssPath] = lastModifiedTime;
+        if (savedModifiedTime !== 0) {
           this.info("Stylesheets updated");
           this.sendSocketNotification(`${this.name}-UPDATE_CSS`, true);
         }
       }
-    }
+    });
   }
 });
