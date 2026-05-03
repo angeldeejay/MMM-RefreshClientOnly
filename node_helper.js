@@ -38,7 +38,7 @@ module.exports = NodeHelper.create({
 
     this.uuid = md5(new Date().toString());
     this.info("UUID is " + this.uuid);
-    setInterval(() => this.performChecks(), 1000);
+    setInterval(() => this.performChecks(), 250);
     this.info("Started");
   },
 
@@ -46,20 +46,20 @@ module.exports = NodeHelper.create({
     this.sendSocketNotification(`${this.name}-UUID`, this.uuid);
 
     Object.entries(this.cssPaths).forEach(([cssPath, mtime]) => {
-      if (!fs.existsSync(cssPath)) {
-        return;
-      }
-
-      const stats = fs.statSync(cssPath);
-      const lastModifiedTime = stats.mtimeMs;
-      const savedModifiedTime = mtime ?? 0;
-      if (lastModifiedTime > savedModifiedTime) {
-        this.cssPaths[cssPath] = lastModifiedTime;
-        if (savedModifiedTime !== 0) {
-          this.info("Stylesheets updated");
-          this.sendSocketNotification(`${this.name}-UPDATE_CSS`, true);
+      fs.stat(cssPath, (err, stats) => {
+        if (err) {
+          return;
         }
-      }
+        const lastModifiedTime = stats.mtimeMs;
+        const savedModifiedTime = mtime ?? 0;
+        if (lastModifiedTime > savedModifiedTime) {
+          this.cssPaths[cssPath] = lastModifiedTime;
+          if (savedModifiedTime !== 0) {
+            this.info("Stylesheets updated");
+            this.sendSocketNotification(`${this.name}-UPDATE_CSS`, true);
+          }
+        }
+      });
     });
   }
 });
